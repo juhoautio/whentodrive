@@ -5,7 +5,7 @@ This application is able to retrieve traffic fluency data from [Digitraffic].
 [Digitraffic]: http://infotripla.fi/digitraffic-beta/doku.php?id=trafficfluency
 
 
-## Build
+## Maven build
 Build should work out of the box, just do `mvn compile` or `mvn test` to try it.
 
 You need to provide your user information in `src/main/resources/conf.json`
@@ -14,6 +14,9 @@ You need to provide your user information in `src/main/resources/conf.json`
 
 [Configuration]: src/main/java/juhoautio/whentodrive/configuration/Configuration.java
 
+### Intellij IDEA
+
+Just import as a maven project. It might take a while to generate the sources. Be patient - it should work out of the box.
 
 ## TrafficWsClient
 [TrafficWsClient] is a ws client that uses CXF generated classes

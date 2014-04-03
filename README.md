@@ -6,7 +6,7 @@ This application is able to retrieve traffic fluency data from [Digitraffic].
 
 
 ## Maven build
-Build should work out of the box, just do `mvn compile` or `mvn test` to try it.
+Build should work out of the box with Java 1.7, just do `mvn compile` or `mvn test` to try it.
 
 You need to provide your user information in `src/main/resources/conf.json`
 
@@ -35,3 +35,15 @@ Just import as a maven project. It might take a while to generate the sources. B
 
 [TrafficRsClient]: src/main/java/juhoautio/whentodrive/client/TrafficRsClient.java
 [TrafficRsClientTest]: src/test/java/juhoautio/whentodrive/client/TrafficRsClientTest.java
+
+
+## Troubleshooting
+
+### Java 1.8
+
+With Java 1.8, code generation may fail. With Java 8 it's still possible to use [TrafficRsClient]. Or even [TrafficWsClient], if the ws code is first generated with java 1.7 or 1.6.
+
+
+### Code generation from WSDL
+
+If code generation oddly fails, check that http://open.digitraffic.fi/services/trafficFluency?wsdl is returning to HTTP GET.

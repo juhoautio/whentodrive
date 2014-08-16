@@ -1,11 +1,13 @@
 package juhoautio.whentodrive.client;
 
+import com.arstraffic.ftt.schemas.locationdata.Jtdata;
 import com.gofore.sujuvuus.schemas.ObstimeType;
 import com.gofore.sujuvuus.schemas.TrafficFluencyPort;
 import com.gofore.sujuvuus.schemas.TrafficFluencyResponse;
 import com.gofore.sujuvuus.schemas.TrafficFluencyService;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimaps;
+import juhoautio.whentodrive.configuration.Configuration;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.slf4j.Logger;
@@ -29,17 +31,20 @@ public class TrafficWsClient {
 
     private final TrafficFluencyService service;
     private final boolean logSoapMessages;
-
     private final Map<String, List<String>> dtUserHeaders;
+    private final Configuration conf;
+    private final TrafficRsClient restClient;
 
-    public TrafficWsClient(boolean logSoapMessages, Map<String, String> userConfiguration) {
+    public TrafficWsClient(boolean logSoapMessages, Configuration conf) {
         this.logSoapMessages = logSoapMessages;
         ClientConfig config = new ClientConfig();
         config.register(LoggingFilter.class);
         service = new TrafficFluencyService();
         // convert to a multimap
         dtUserHeaders = Multimaps.asMap(ImmutableListMultimap.copyOf(Multimaps
-                .forMap(userConfiguration)));
+                .forMap(conf.getClientUser())));
+        this.conf = conf;
+        this.restClient = new TrafficRsClient(false, conf);
         LOG.debug("Read headers: {}", dtUserHeaders);
     }
 
@@ -58,6 +63,10 @@ public class TrafficWsClient {
 
         // map response
         return new FluencyResponse(timestamp.value, lastStaticDataupdate.value, linkDynamicData.value);
+    }
+
+    public Jtdata getLinkData() {
+        return restClient.getLinkData();
     }
 
     private void enableLogging(TrafficFluencyPort port) {

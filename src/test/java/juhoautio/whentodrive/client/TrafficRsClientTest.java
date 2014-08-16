@@ -1,5 +1,6 @@
 package juhoautio.whentodrive.client;
 
+import com.arstraffic.ftt.schemas.locationdata.Jtdata;
 import juhoautio.whentodrive.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
@@ -35,7 +37,7 @@ public class TrafficRsClientTest {
 
     @Before
     public void setUp() throws Exception {
-        client = new TrafficRsClient(true, Configuration.read().getClientUser());
+        client = new TrafficRsClient(true, Configuration.read());
     }
 
     @Test
@@ -61,6 +63,12 @@ public class TrafficRsClientTest {
         // further work:
         // response could also be read with XmlMapper by using the generated JAX-B classes?
         // any way the main point of this client is to be independent of code generation.
+    }
+
+    @Test
+    public void getLinkData() throws Exception {
+        Jtdata data = client.getLinkData();
+        assertThat(data, is(notNullValue()));
     }
 
     private Document parse(String data) throws SAXException, IOException, ParserConfigurationException {

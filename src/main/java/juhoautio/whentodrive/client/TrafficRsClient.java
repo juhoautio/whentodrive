@@ -1,5 +1,8 @@
 package juhoautio.whentodrive.client;
 
+import com.arstraffic.ftt.schemas.locationdata.Jtdata;
+import juhoautio.whentodrive.configuration.Configuration;
+import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.filter.LoggingFilter;
 
@@ -7,6 +10,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -23,16 +27,18 @@ public class TrafficRsClient {
             "</S:Envelope>\n";
 
     private final Client client;
-    private final Map<String, String> userHeaders;
+    private final Configuration conf;
+    private final JtdataReader jtdataReader;
 
-    public TrafficRsClient(boolean logHeaders, Map<String, String> userHeaders) {
-        this.userHeaders = userHeaders;
+    public TrafficRsClient(boolean logHeaders, Configuration conf) {
+        this.conf = conf;
         ClientConfig config = new ClientConfig();
         if (logHeaders) {
             // log request & response headers
             config.register(LoggingFilter.class);
         }
         client = ClientBuilder.newClient(config);
+        jtdataReader = new JtdataReader();
     }
 
     /**
@@ -63,10 +69,19 @@ public class TrafficRsClient {
     }
 
     private Invocation.Builder addUserHeaders(Invocation.Builder request) {
-        for (Map.Entry<String, String> header : userHeaders.entrySet()) {
+        for (Map.Entry<String, String> header : conf.getClientUser().entrySet()) {
             request = request.header(header.getKey(), header.getValue());
         }
         return request;
+    }
+
+    public Jtdata getLinkData() {
+        InputStream xml = client.target(conf.getLinkDataUrl()).request().get(InputStream.class);
+        try {
+            return jtdataReader.read(xml);
+        } finally {
+            IOUtils.closeQuietly(xml);
+        }
     }
 
 }

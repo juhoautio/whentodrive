@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Jackson-annotated class for parsing the configuration.
  *
@@ -29,16 +31,25 @@ public class Configuration {
     public static final String CONF_PATH = "src/main/resources/conf.json";
 
     private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
+    private static final String DEFAULT_LINK_DATA_URL = "http://infotripla.fi/digitraffic-beta/lib/exe/fetch" +
+            ".php?tok=a8263d&media=http%3A%2F%2Fwww.infotripla.fi%2Fdigitraffic%2Fdocs%2FLocationData.XML";
 
     private final Map<String, String> clientUser;
+    private final String linkDataUrl;
 
     @JsonCreator
-    public Configuration(@JsonProperty("clientUser") Map<String, String> clientUser) {
+    public Configuration(@JsonProperty("clientUser") Map<String, String> clientUser,
+                         @JsonProperty("linkDataUrl") String linkDataUrl) {
         this.clientUser = clientUser;
+        this.linkDataUrl = linkDataUrl;
     }
 
     public Map<String, String> getClientUser() {
         return clientUser;
+    }
+
+    public String getLinkDataUrl() {
+        return linkDataUrl;
     }
 
     /**
@@ -64,6 +75,7 @@ public class Configuration {
     private static void validate(Configuration read) {
         checkPlaceHolderReplaced(read, DT_USER_AGENT, PLACEHOLDER_USER_AGENT);
         checkPlaceHolderReplaced(read, DT_CONTACT_INFO, PLACEHOLDER_CONTACT_INFO);
+        checkNotNull(read.getLinkDataUrl());
     }
 
     private static void checkPlaceHolderReplaced(Configuration read, String key, String placeholderValue) {
@@ -88,7 +100,7 @@ public class Configuration {
         HashMap<String, String> userMap = new HashMap<>();
         userMap.put(DT_USER_AGENT, PLACEHOLDER_USER_AGENT);
         userMap.put(DT_CONTACT_INFO, PLACEHOLDER_CONTACT_INFO);
-        Configuration template = new Configuration(userMap);
+        Configuration template = new Configuration(userMap, DEFAULT_LINK_DATA_URL);
         try {
             FileUtils.forceMkdir(templateFile.getParentFile());
             JsonUtils.PRETTY_PRINTER.writeValue(templateFile, template);

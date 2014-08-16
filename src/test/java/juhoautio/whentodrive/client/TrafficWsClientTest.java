@@ -29,7 +29,7 @@ public class TrafficWsClientTest {
 
     @Before
     public void setUp() throws Exception {
-        client = new TrafficWsClient(true, Configuration.read().getClientUser());
+        client = new TrafficWsClient(true, Configuration.read());
     }
 
     @Test

@@ -85,6 +85,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <!-- generate Java classes of DigiTraffic WS types -->
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
@@ -104,6 +105,40 @@
                         <goals>
                             <goal>wsdl2java</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- generate JAXB model for link data from XSD schema -->
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-xjc-plugin</artifactId>
+                <version>2.3.0</version>
+                <configuration>
+                    <extensions>
+                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:2.3.0</extension>
+                    </extensions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xsdtojava</goal>
+                        </goals>
+                        <configuration>
+                            <sourceRoot>${basedir}/target/generated-sources/cxf</sourceRoot>
+                            <xsdOptions>
+                                <xsdOption>
+                                    <!-- TODO give feedback to infotripla that this schema is slightly broken:
+                                    extra spaces in " xsd:decimal " -->
+                                    <!--
+                                    <xsd>http://www.infotripla.fi/digitraffic/docs/staticinformation.xsd</xsd>
+                                    -->
+                                    <!-- Use a fixed, local copy -->
+                                    <xsd>src/main/resources/staticinformation.xsd</xsd>
+                                </xsdOption>
+                            </xsdOptions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

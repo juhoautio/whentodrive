@@ -1,7 +1,6 @@
 package juhoautio.whentodrive.client;
 
 import com.arstraffic.ftt.schemas.locationdata.Jtdata;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -13,19 +12,18 @@ import static org.junit.Assert.assertThat;
 
 public class JtdataReaderTest {
 
-    private JtdataReader reader;
-
-    @Before
-    public void setUp() throws Exception {
-        reader = new JtdataReader();
-    }
+    private static JtdataReader READER = new JtdataReader();
 
     @Test
     public void read() throws Exception {
-        InputStream is = ClassLoader.class.getResourceAsStream("/linkdata.xml");
-        Jtdata data = reader.read(is);
+        Jtdata data = readFile();
         assertThat(data, is(notNullValue()));
         assertThat(data.getLinklist().getLink().size(), greaterThan(0));
+    }
+
+    public static Jtdata readFile() {
+        InputStream is = ClassLoader.class.getResourceAsStream("/linkdata.xml");
+        return READER.read(is);
     }
 
 }
